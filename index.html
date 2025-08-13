@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta name="theme-color" content="#0d0d0f"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <link rel="apple-touch-icon" href="./icon-192.png"/>
+  <link rel="manifest" href="./manifest.webmanifest"/>
+  <title>MyAiTeacher</title>
+  <link rel="stylesheet" href="./styles.css"/>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo"></div>
+        <h1>MyAiTeacher</h1>
+      </div>
+      <div class="stats">
+        <span id="online-indicator" class="status-dot" title="offline/online"></span>
+        <span id="stat-progress">0 modules complete</span>
+        <button id="installBtn" class="btn ghost" style="display:none">Install App</button>
+      </div>
+    </header>
+
+    <nav id="tabs">
+      <button data-tab="tab-curriculum">Curriculum</button>
+      <button data-tab="tab-labs">Labs</button>
+      <button data-tab="tab-models">Models</button>
+      <button data-tab="tab-rag">RAG Playground</button>
+      <button data-tab="tab-prompts">Prompts</button>
+      <button data-tab="tab-future">Future Radar</button>
+      <button data-tab="tab-updates">Update Center</button>
+      <button data-tab="tab-quizzes">Quizzes</button>
+      <button data-tab="tab-backup">Backup</button>
+      <button data-tab="tab-resources">Resources</button>
+      <button data-tab="tab-videos">Videos</button>
+    </nav>
+
+    <section id="tab-curriculum" class="tab">
+      <p>Adaptive, multi-phase path to top-5% AI mastery (with law/litigation integrations). Mark modules complete, take notes, and launch quizzes.</p>
+      <div id="modules"></div>
+    </section>
+
+    <section id="tab-labs" class="tab" style="display:none">
+      <div class="grid">
+        <div class="panel">
+          <h3>Code Lab</h3>
+          <p class="subtle">Run vanilla JavaScript in a sandbox. Useful for toy ML demos, text parsing, or algorithm exercises.</p>
+          <textarea id="code" rows="12">// Example: simple softmax
+function softmax(arr){const e=arr.map(x=>Math.exp(x));const s=e.reduce((a,b)=>a+b,0);return e.map(v=>v/s)}
+console.log('softmax([1,2,3]) =', softmax([1,2,3]))</textarea>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button class="btn primary" id="run">Run</button>
+            <button class="btn ghost" id="reset">Reset</button>
+          </div>
+          <h4>Output</h4>
+          <pre id="output"></pre>
+        </div>
+        <div class="panel">
+          <h3>Exercises</h3>
+          <ul>
+            <li>Implement cosine similarity and test it on two sentences.</li>
+            <li>Write a tiny feed-forward network (one hidden layer) and train it on XOR.</li>
+            <li>Parse a mock deposition transcript and extract Q/A pairs.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-models" class="tab" style="display:none">
+      <div class="grid">
+        <div class="panel">
+          <h3>TinyNN — In-Browser Demo</h3>
+          <p class="subtle">Load a small JSON model and run inference entirely in the browser. Dense → ReLU → softmax.</p>
+          <input type="file" id="model-file" accept="application/json"/>
+          <div style="margin-top:8px">
+            <label>Input (comma-separated): <input id="model-input" placeholder="e.g., 0.2, -0.3, 0.5"/></label>
+            <button class="btn" id="model-run">Predict</button>
+          </div>
+          <pre id="model-out"></pre>
+        </div>
+
+        <div class="panel">
+          <h3>Connect External Models (Optional)</h3>
+          <p class="subtle">Point to local or hosted endpoints that support OpenAI-style APIs. For best results, serve this app and the endpoint from the same origin or enable CORS.</p>
+          <label>Endpoint URL <input id="llm-url" placeholder="http://localhost:11434/v1/chat/completions"/></label>
+          <label>API Key (if needed) <input id="llm-key" placeholder="sk-..."/></label>
+          <label>Prompt <textarea id="llm-prompt" rows="4" placeholder="Explain transformers in 120 words."></textarea></label>
+          <button class="btn" id="llm-send">Send</button>
+          <pre id="llm-out"></pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-rag" class="tab" style="display:none">
+      <div class="grid">
+        <div class="panel">
+          <h3>RAG Playground (TF-IDF)</h3>
+          <p class="subtle">Drop text or .txt files. Ask a question and this will retrieve the most relevant passages using TF-IDF (no external models required).</p>
+          <input type="file" id="rag-files" multiple accept=".txt,text/plain"/>
+          <textarea id="rag-text" rows="6" placeholder="Or paste text here..."></textarea>
+          <div class="input-row"><input id="rag-query" placeholder="Your question..."><button class="btn" id="rag-ask">Search</button></div>
+          <pre id="rag-out"></pre>
+        </div>
+        <div class="panel">
+          <h3>Tips</h3>
+          <ul>
+            <li>Split long docs into logical sections before upload for better retrieval.</li>
+            <li>Use precise nouns and verbs in your query.</li>
+            <li>For legal use, paste complaint/exhibits to create a quick internal search.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-prompts" class="tab" style="display:none">
+      <div class="grid" id="prompts"></div>
+    </section>
+
+    <section id="tab-future" class="tab" style="display:none">
+      <div class="grid">
+        <div class="panel">
+          <h3>Future Radar — Signals & Shifts</h3>
+          <ul id="future-signals"></ul>
+        </div>
+        <div class="panel">
+          <h3>2030+ Bets & Counter-Bets</h3>
+          <ul id="future-bets"></ul>
+        </div>
+        <div class="panel">
+          <h3>Assumptions to Revisit Quarterly</h3>
+          <ul id="future-assumptions"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-updates" class="tab" style="display:none">
+      <div class="grid">
+        <div class="panel">
+          <h3>Update Center</h3>
+          <p class="subtle">This app auto-loads updates from <code>/updates/feed.json</code>. Paste another feed URL to merge more.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input id="feedUrl" placeholder="https://your-site/updates/feed.json" style="flex:1">
+            <button class="btn" id="fetchFeed">Fetch & Merge</button>
+            <input type="file" id="feedFile" accept="application/json">
+            <button class="btn" id="importFeed">Import File</button>
+          </div>
+          <pre id="feedLog"></pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-quizzes" class="tab" style="display:none">
+      <div class="grid">
+        <div class="panel"><h3>Your Quiz History</h3><div id="quiz-stats"></div></div>
+        <div class="panel"><h3>How quizzes work</h3><p>Open any module in the Curriculum tab and hit <em>Take Quiz</em>. Your score and date are recorded here.</p></div>
+      </div>
+    </section>
+
+    <section id="tab-backup" class="tab" style="display:none">
+      <div class="grid">
+        <div class="panel">
+          <h3>Backup & Restore</h3>
+          <p class="subtle">Export your notes, progress, and quiz scores to a .json file. You can import later on this or another device.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" id="exportBtn">Export Data</button>
+            <input type="file" id="importFile" accept="application/json"/>
+            <button class="btn" id="importBtn">Import</button>
+          </div>
+          <pre id="backup-log"></pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-resources" class="tab" style="display:none">
+      <p>Curated references: official frameworks, academic centers, engineering guides, and litigation tools.</p>
+      <div id="resources"></div>
+    </section>
+
+    <section id="tab-videos" class="tab" style="display:none">
+      <p>Talks and explainers to deepen your intuition.</p>
+      <div id="videos"></div>
+    </section>
+  </div>
+
+  <footer><div class="hint">Install this as an app: Share → Add to Home Screen. Works offline. Updates load from /updates/feed.json.</div></footer>
+
+  <dialog id="quiz-modal">
+    <div class="modal-header">
+      <h3 id="quiz-title">Quiz</h3>
+      <div class="modal-actions">
+        <button class="btn ghost" id="quiz-close">Close</button>
+        <button class="btn primary" id="quiz-next">Next</button>
+      </div>
+    </div>
+    <div id="quiz-body" class="card-body"></div>
+  </dialog>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
